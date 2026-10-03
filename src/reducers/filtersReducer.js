@@ -1,24 +1,28 @@
-// Reducer dos favoritos (useReducer).
-// Guardamos só os ids dos filmes; os dados completos vêm da lista da API.
+// Reducer dos filtros do catálogo (useReducer).
 
-export const initialFavorites = [];
-
-export const FAVORITE_ACTIONS = {
-  TOGGLE: 'favorites/toggle',
-  REMOVE: 'favorites/remove',
-  CLEAR: 'favorites/clear',
+export const initialFilters = {
+  search: '',
+  director: 'all',
+  sortBy: 'title', // title | year | score | duration
 };
 
-export function favoritesReducer(state, action) {
+export const FILTER_ACTIONS = {
+  SET_SEARCH: 'filters/setSearch',
+  SET_DIRECTOR: 'filters/setDirector',
+  SET_SORT: 'filters/setSort',
+  RESET: 'filters/reset',
+};
+
+export function filtersReducer(state, action) {
   switch (action.type) {
-    case FAVORITE_ACTIONS.TOGGLE:
-      return state.includes(action.id)
-        ? state.filter((id) => id !== action.id)
-        : [...state, action.id];
-    case FAVORITE_ACTIONS.REMOVE:
-      return state.filter((id) => id !== action.id);
-    case FAVORITE_ACTIONS.CLEAR:
-      return [];
+    case FILTER_ACTIONS.SET_SEARCH:
+      return { ...state, search: action.value };
+    case FILTER_ACTIONS.SET_DIRECTOR:
+      return { ...state, director: action.value };
+    case FILTER_ACTIONS.SET_SORT:
+      return { ...state, sortBy: action.value };
+    case FILTER_ACTIONS.RESET:
+      return initialFilters;
     default:
       return state;
   }
