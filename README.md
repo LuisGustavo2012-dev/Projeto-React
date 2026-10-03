@@ -3,11 +3,13 @@
 SPA em React.js que consome a [Studio Ghibli API](https://ghibliapi.vercel.app/) via AJAX (`fetch`).
 Projeto 1 de Programação Web Fullstack.
 
+- Luis Gustavo Roque Desiderio da silva 
+- RA: A2706474
+
 ## Funcionalidades
 - Catálogo de filmes com busca por título, filtro por diretor e ordenação
 - Detalhe do filme em modal, com personagens carregados da API
 - Favoritos persistidos no `localStorage`
-- [Descreva aqui a sua funcionalidade extra]
 
 ## Requisitos atendidos
 - **API JSON aberta:** Studio Ghibli API
