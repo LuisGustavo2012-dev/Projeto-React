@@ -1,6 +1,7 @@
 import { useMemo, useReducer, useState } from 'react';
-import { AppBar, Container, Toolbar, Typography } from '@mui/material';
+import { AppBar, Badge, Box, Container, Tab, Tabs, Toolbar, Typography } from '@mui/material';
 import useFetch from './hooks/useFetch.js';
+import useFavorites from './hooks/useFavorites.js';
 import { getFilms } from './services/ghibliApi.js';
 import { filtersReducer, initialFilters } from './reducers/filtersReducer.js';
 import FilterBar from './components/FilterBar.jsx';
@@ -18,6 +19,8 @@ const sorters = {
 export default function App() {
   const { data: films, loading, error } = useFetch(getFilms, []);
   const [filters, dispatchFilters] = useReducer(filtersReducer, initialFilters);
+  const { favorites, isFavorite, toggleFavorite } = useFavorites();
+  const [tab, setTab] = useState('catalog');
   const [selectedFilm, setSelectedFilm] = useState(null);
 
   const directors = useMemo(
@@ -25,7 +28,6 @@ export default function App() {
     [films]
   );
 
-  // Filtra e ordena só quando films ou filters mudam
   const visibleFilms = useMemo(() => {
     const term = filters.search.trim().toLowerCase();
     return (films ?? [])
@@ -33,6 +35,13 @@ export default function App() {
       .filter((f) => filters.director === 'all' || f.director === filters.director)
       .sort(sorters[filters.sortBy]);
   }, [films, filters]);
+
+  const favoriteFilms = useMemo(
+    () => (films ?? []).filter((f) => favorites.includes(f.id)),
+    [films, favorites]
+  );
+
+  const gridProps = { isFavorite, onToggleFavorite: toggleFavorite, onOpen: setSelectedFilm };
 
   return (
     <>
@@ -43,23 +52,44 @@ export default function App() {
       </AppBar>
 
       <Container sx={{ py: 3 }}>
+        <Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ mb: 3 }}>
+          <Tab value="catalog" label="Catálogo" />
+          <Tab
+            value="favorites"
+            label={<Badge color="secondary" badgeContent={favorites.length} sx={{ pr: 1.5 }}>Favoritos</Badge>}
+          />
+        </Tabs>
+
         {loading && <Loading label="Carregando filmes..." />}
         {error && <ErrorMessage error={error} onRetry={() => window.location.reload()} />}
 
-        {films && (
-          <>
+        {films && tab === 'catalog' && (
+          <Box>
             <FilterBar filters={filters} directors={directors} dispatch={dispatchFilters} />
             {visibleFilms.length === 0 ? (
               <EmptyMessage title="Nenhum filme encontrado" hint="Altere a busca ou limpe os filtros." />
             ) : (
-              <FilmGrid films={visibleFilms} onOpen={setSelectedFilm} />
+              <FilmGrid films={visibleFilms} {...gridProps} />
             )}
-          </>
+          </Box>
+        )}
+
+        {films && tab === 'favorites' && (
+          favoriteFilms.length === 0 ? (
+            <EmptyMessage title="Você ainda não favoritou nenhum filme" hint="Toque na estrela de um filme no catálogo." />
+          ) : (
+            <FilmGrid films={favoriteFilms} {...gridProps} />
+          )
         )}
       </Container>
 
       {selectedFilm && (
-        <FilmDetailDialog film={selectedFilm} onClose={() => setSelectedFilm(null)} />
+        <FilmDetailDialog
+          film={selectedFilm}
+          onClose={() => setSelectedFilm(null)}
+          isFavorite={isFavorite(selectedFilm.id)}
+          onToggleFavorite={toggleFavorite}
+        />
       )}
     </>
   );

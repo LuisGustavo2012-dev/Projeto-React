@@ -7,7 +7,7 @@ import { ErrorMessage, Loading } from './StatusMessage.jsx';
 // Modal de detalhes. Busca os personagens via AJAX ao abrir.
 // Os links `people` do filme podem vir genéricos, então filtramos
 // a lista completa de personagens pelo id do filme.
-export default function FilmDetailDialog({ film, onClose }) {
+export default function FilmDetailDialog({ film, onClose, isFavorite, onToggleFavorite }) {
   const { data: people, loading, error } = useFetch(getPeople, [film.id]);
 
   const cast = useMemo(
@@ -43,7 +43,10 @@ export default function FilmDetailDialog({ film, onClose }) {
         </Stack>
       </DialogContent>
 
-      <DialogActions>
+        <DialogActions>
+        <Button onClick={() => onToggleFavorite(film.id)}>
+          {isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+        </Button>
         <Button onClick={onClose}>Fechar</Button>
       </DialogActions>
     </Dialog>

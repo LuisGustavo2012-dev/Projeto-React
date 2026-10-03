@@ -1,11 +1,11 @@
-import { Box, Card, CardActionArea, CardContent, Chip, Stack, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, Chip, IconButton, Stack, Typography } from '@mui/material';
 
-export default function FilmCard({ film, onOpen }) {
+export default function FilmCard({ film, isFavorite, onToggleFavorite, onOpen }) {
   return (
-    <Card sx={{ height: '100%' }}>
-      <CardActionArea onClick={() => onOpen(film)} sx={{ height: '100%' }}>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <CardActionArea onClick={() => onOpen(film)} sx={{ flexGrow: 1 }}>
         <Box sx={{ bgcolor: 'primary.main', color: 'common.white', px: 2, py: 1.5 }}>
-          <Typography variant="h6" component="h3">
+          <Typography variant="h6" component="h3" sx={{ pr: 5 }}>
             {film.title}
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.85 }}>
@@ -23,6 +23,14 @@ export default function FilmCard({ film, onOpen }) {
           </Stack>
         </CardContent>
       </CardActionArea>
+
+      <IconButton
+        aria-label={isFavorite ? `Remover ${film.title} dos favoritos` : `Favoritar ${film.title}`}
+        onClick={() => onToggleFavorite(film.id)}
+        sx={{ position: 'absolute', top: 8, right: 8, color: 'common.white', fontSize: 22 }}
+      >
+        {isFavorite ? '★' : '☆'}
+      </IconButton>
     </Card>
   );
 }
